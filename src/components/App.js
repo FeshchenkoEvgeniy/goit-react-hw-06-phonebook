@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
 import ContactForm from './ContactsForm/ContactForm';
 import Filter from './Filter/Filter';
 import { ContactList } from './ContactsList/ContactList';
 import { Container } from './App.styled';
 import { ToastContainer, toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 export default function App() {
   const [filter, setFilter] = useState('');
@@ -12,27 +12,11 @@ export default function App() {
     return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
   });
 
+  const tasks = useSelector(state => state.contacts);
+
   useEffect(() => {
     window.localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
-
-  const addContact = (name, number) => {
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-    if (
-      contacts.some(
-        contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
-      )
-    ) {
-      toast(`${name} is already in contacts.`);
-      return;
-    }
-
-    setContacts(prevContacts => [newContact, ...prevContacts]);
-  };
 
   const changeFilter = evt => {
     setFilter(evt.currentTarget.value);
@@ -53,7 +37,7 @@ export default function App() {
   return (
     <Container>
       <h1>Phonebook</h1>
-      <ContactForm onSubmit={addContact} />
+      <ContactForm />
       <h2>Contacts</h2>
       <Filter value={filter} onChange={changeFilter} />
       <ContactList
