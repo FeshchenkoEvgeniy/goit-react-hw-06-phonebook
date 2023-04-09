@@ -1,13 +1,23 @@
 import { Form, Input, Button, Label } from './ContactForm.styled';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from '../../redux/contactSlice';
 export default function ContactForm() {
   const dispatch = useDispatch();
+  const contact = useSelector(state => state.contacts.contact);
 
   const handleSubmit = e => {
     e.preventDefault();
     const { name, number } = e.target.elements;
-    dispatch(addContact(name.value, number.value));
+    if (
+      contact.some(
+        contact => contact.name.toLowerCase() === name.value.toLowerCase()
+      )
+    ) {
+      alert(`${name.value} is already in the contact list`);
+      return;
+    } else {
+      dispatch(addContact(name.value, number.value));
+    }
   };
 
   return (
